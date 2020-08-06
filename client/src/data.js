@@ -1,14 +1,13 @@
 let moment = require('moment')
 
-let serverUrl = process.env.REACT_APP_SERVER_URL
+let serverUrl = 'http://127.0.0.1:5000/'
 let aquariusBaseUrl = "https://aquarius.pacific.dev-ocean.com/api/v1/aquarius/assets/ddo/query"
-let myId = process.env.REACT_APP_MY_ID
-let maxTxs = process.env.REACT_APP_MAX_TX_LIMIT
+let myId = '1234D3aD410E64e1456A5Bb91B6085D9720345'
+let maxTxs = '5000'
 
 async function getAllApps() {
     let resp = await fetch(serverUrl)
     let data = await resp.json()
-    console.log(data)
     return data
 }
 
@@ -16,7 +15,6 @@ async function getAllTxs() {
     //get all tx data
     let resp = await fetch(aquariusBaseUrl + `?text=${myId}&offset=${maxTxs}`)
     let data = await resp.json()
-    console.log(data)
     return data
 }
 
@@ -47,10 +45,9 @@ export async function getAllStats() {
     //get time based tx
     let chartData = await getTimebasedTxs(results['results'])
     stats.txChartData = chartData
-    console.log(chartData)
 
     //app details
-    stats.apps = await Promise.all(apps.apps.map(async app => {
+    stats.apps = await Promise.all(apps.map(async app => {
         let txCount = await getTxsPerApp(app.appid, results['results'])
         return {
             id: app.appid,
@@ -61,7 +58,7 @@ export async function getAllStats() {
     }))
 
     //total apps
-    stats.totalApps = apps.apps.length
+    stats.totalApps = apps.length
 
     return stats
 }
@@ -120,7 +117,6 @@ async function getTimebasedTxs(txs) {
 
 async function getTxsPerApp(appId, txs) {
     let filteredTxs = txs.filter(tx => {
-        console.log(tx['service'][0])
         return tx['service'][0]['attributes']['additionalInformation']['appId'] == appId
     })
     return filteredTxs.length

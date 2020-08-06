@@ -8,9 +8,9 @@ export default function Header() {
     <div>
       <nav class="navbar is-white" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-          <a class="navbar-item" href="/">
-            <b>Ocean Protocol Pacific Stats</b>
-          </a>
+          <h1 class="navbar-item title">
+            Ocean Protocol Pacific Stats
+          </h1>
         </div>
       </nav>
     </div>

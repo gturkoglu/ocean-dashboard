@@ -1,15 +1,18 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Link,
-  useParams
+  Route
 } from "react-router-dom";
 import Header from './components/Header'
-import {
-  BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie
-} from 'recharts';
+import axios from 'axios';
+import TotalApps from './TotalApps';
+import TotalTXs from './TotalTXs';
+import TotalUsers from './TotalUsers';
+import UniqueUsers from './UniqueUsers';
+import BestApps from './BestApps';
+import TransactionHistory from './TransactionHistory';
+
 
 export default function App() {
   return (
@@ -27,28 +30,23 @@ export default function App() {
 
 
 function Home() {
-  const data = [
-  {
-    'Transaction Count': 4000 ,
-  },
-  {
-    'Transaction Count': 90,
-  },
-  {
-    'Transaction Count': 150,
-  },
-];
-  const data01 = [
-    { name: 'Group A', value: 400 }, { name: 'Group B', value: 300 },
-    { name: 'Group C', value: 300 }, { name: 'Group D', value: 200 },
-    { name: 'Group E', value: 278 }, { name: 'Group F', value: 189 },
+  const [data, setData] = useState([]);
+
+  const columns = [
+    { property: "appid", header: "App Id" },
+    { property: "homepage", header: "Homepage" },
+    { property: "name", header: "Name" },
   ];
 
-  const data02 = [
-    { name: 'Group A', value: 2400 }, { name: 'Group B', value: 4567 },
-    { name: 'Group C', value: 1398 }, { name: 'Group D', value: 9800 },
-    { name: 'Group E', value: 3908 }, { name: 'Group F', value: 4800 },
-  ];
+  useEffect(() => {
+    const loadData = async () => {
+      const response = await axios(
+        "http://127.0.0.1:5000/"
+      );
+      setData(response.data);
+    };
+    loadData();
+  }, []);
   return (
     <div>
       <Header />
@@ -57,25 +55,25 @@ function Home() {
         <div class="column">
           <div class="box">
             <h2 class="subtitle">Total Apps</h2>
-            <p>20</p>
+            <TotalApps />
           </div>
         </div>
         <div class="column">
           <div class="box">
             <h2 class="subtitle">Total TXs</h2>
-            <p>50</p>
+            <TotalTXs />
           </div>
         </div>
         <div class="column">
           <div class="box">
             <h2 class="subtitle">Total Users</h2>
-            <p>569</p>
+           <TotalUsers />
           </div>
         </div>
         <div class="column">
           <div class="box">
             <h2 class="subtitle">Unique Users</h2>
-            <p>89</p>
+            <UniqueUsers />
           </div>
         </div>
       </div>
@@ -83,32 +81,33 @@ function Home() {
         <div class="column">
           <div class="box">
             <h2 class="subtitle">Transaction History</h2>
-            <BarChart
-              width={500}
-              height={300}
-              data={data}
-              margin={{
-                top: 5, right: 30, left: 20, bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <YAxis dataKey="Transaction Count" />
-              <XAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="Transaction count" fill="#8884d8" />
-            </BarChart>
+            <TransactionHistory />
           </div>
         </div>
         <div class="column">
           <div class="box">
             <h2 class="subtitle">Most Used Apps</h2>
-            <PieChart width={500} height={300}>
-              <Pie dataKey="value" isAnimationActive={false} data={data01} cx={200} cy={200} outerRadius={80} fill="#8884d8" label />
-              <Tooltip />
-            </PieChart>
+            <BestApps />
           </div>
         </div>
+      </div>
+      <div class="card">
+      <table class="table" style={{width: "100%"}}>
+          <tr>
+            {columns.map(col => (
+              <th>{col.header}</th>
+            ))}
+          </tr>
+          {data.map(datumn => {
+            return (
+              <tr>
+                {columns.map(col => {
+                  return <td>{datumn[col.property]}</td>;
+                })}
+              </tr>
+            );
+          })}
+        </table>
       </div>
     </div>
   );
